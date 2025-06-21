@@ -1,0 +1,45 @@
+name: setup c2pcli
+description: 'Installs the c2pcli in the runner environment'
+
+
+inputs:
+  c2p-version:
+    description: 'Version of C2P to install. Defaults to latest.'
+    required: false
+    default: 'main'
+  c2p-org:
+    description: 'For testing with forks. Defaults to upstream.'
+    required: false
+    default: 'oscal-compass'
+outputs:
+  c2p-version:
+    value: ${{ steps.version.outputs.c2p_version }}
+    description: 'The installed C2P version.'
+
+
+runs:
+  using: "composite"
+  steps:
+  - name: Set up Go
+    uses: actions/setup-go@3041bf56c941b39c61721a86cd11f3bb1338122a # v5.2.0
+    with:
+      go-version: '1.24'
+      cache: false
+      check-latest: true
+
+  - name: Build
+    env:
+      VERSION: ${{ inputs.c2p-version }}
+      ORG: ${{ inputs.c2p-org }}
+    run:  go install "github.com/$ORG/compliance-to-policy-go/v2/cmd/c2pcli@$VERSION"
+    shell: bash
+
+  - name: Add to path
+    env:
+      INSTALL_DIR: ${{ inputs.install-dir }}
+    run: echo $(go env GOPATH)/bin >> $GITHUB_PATH
+    shell: bash
+
+  - shell: bash
+    id: version
+    run: echo "c2p_version=$(c2pcli version)" >> $GITHUB_OUTPUT
