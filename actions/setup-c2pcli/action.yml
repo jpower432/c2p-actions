@@ -6,7 +6,7 @@ inputs:
   c2p-version:
     description: 'Version of C2P to install. Defaults to latest.'
     required: false
-    default: 'main'
+    default: 'latest'
   c2p-org:
     description: 'For testing with forks. Defaults to upstream.'
     required: false
